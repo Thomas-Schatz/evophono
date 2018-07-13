@@ -13,6 +13,7 @@ to get an idea of the size of problems solvable with CPlex.
 from docplex.mp.advmodel import AdvModel as Model
 import numpy as np
 import time
+import parameters
 
 def get_model(u, C, f, c, l):
     """
@@ -71,15 +72,39 @@ def random_params(m, n, seed=0):
     return u, C, f, c, l
 
 
+"""
+# Random params
 m = 150  # number of possible signals/words
 n = 30 # number of referents/meaning/concepts
 params = random_params(m, n)
+"""
+
+# Non-random params
+atoms_dis = np.array([[0, .1, 1-.1, 1-.01],
+                      [.1, 0, 1-.01, 1-.1],
+                      [1-.1, 1-.01, 0, .2],
+                      [1-.01, 1-.1, .2, 0]])
+atoms = ['a', 'e', 'b', 'd']
+
+words, C = parameters.word_confusion(atoms_dis, max_word_len=1, beta=10,
+                                     atoms=atoms)
+
+m = 3 # number of referents/meaning/concepts
+n = len(words)
+
+u = np.ones(m)
+f = np.ones(m)
+c = np.ones(n)
+l =0.
+params = u, C, f, c, l
+
+
 
 # 40s: 30 - 150 local; 10 - 20 global?
 # 50 - 340 local seems to take at least 1h, perhaps much more...
 # perhaps opti will be easier with non random parameters...
 
-"""
+
 # Global
 mdl, P, Q = get_model(*params)
 # 1 global but need convex, 2 local, 3 global for nonconvex
@@ -98,8 +123,8 @@ for i in range(n):
     P_i = P_i / sum(P_i)
     assert max(P_i) == 1, P_i
     L_global.append(np.argmax(P_i))
-"""
 
+"""
 # Local
 mdl, P, Q = get_model(*params)
 mdl.parameters.optimalitytarget = 2
@@ -118,6 +143,7 @@ for i in range(n):
     P_i = P_i / sum(P_i)
     assert max(P_i) == 1, P_i
     L_local.append(np.argmax(P_i))
+"""
 
 # parallelisation?
 # time limit and provisional solution? in local vs global?

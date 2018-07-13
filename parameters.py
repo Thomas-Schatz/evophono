@@ -70,19 +70,3 @@ def word_confusion(atoms_dissimilarity, max_word_len, beta=1, atoms=None):
     S = np.sum(confusion_probas, axis=1)
     confusion_probas = confusion_probas / np.tile(S, (len(all_words), 1)).T
     return all_words, confusion_probas
-
-
-atoms_dis = np.array([[0, .2, .6, .8],
-                      [.2, 0, .8, .6],
-                      [.6, .8, 0, .3],
-                      [.8, .6, .3, 0]])
-atoms = ['a', 'e', 'b', 'd']
-
-a, c = word_confusion(atoms_dis, max_word_len=2, beta=1, atoms=atoms)
-
-#TODO
-#   find how to vary beta and atom_dis such that: distribution of confusions
-#   get more or less peaked, but probability of confusing sound i with any
-#   other sound stays constant
-
-
