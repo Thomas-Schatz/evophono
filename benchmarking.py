@@ -15,6 +15,26 @@ import numpy as np
 import time
 
 def get_model(u, C, f, c, l):
+    """
+    Get a CPLEX model set to optimise fitness in a communication game
+    involving communication efficiency and production cost constraints,
+    as defined by input parameters.
+    
+    Input:
+        u: numpy array of size n, utility of each referent
+        C: numpy array of size m x m, confusion matrix between signals
+        f: numpy array of size n, frequency of production of each referent
+        c: numpy array of size m, production cost of each signal
+        l: positive float, controls production cost/communication efficiency
+                            trade-off. 0 means no influence of production costs,
+                            very high means no influence of communication
+                            efficiency
+
+    Output:
+        mdl: CPLEX model set to optimise fitness as defined by input parameters
+        P: production matrix CPLEX variables
+        Q: reception matrix CPLEX variables
+    """
     m, n = len(c), len(u)
     mdl = Model(name='evophono')
     # create variables (with positivity constraint)
@@ -51,8 +71,8 @@ def random_params(m, n, seed=0):
     return u, C, f, c, l
 
 
-m = 340 # number of possible signals/words
-n = 50 # number of referents/meaning/concepts
+m = 150  # number of possible signals/words
+n = 30 # number of referents/meaning/concepts
 params = random_params(m, n)
 
 # 40s: 30 - 150 local; 10 - 20 global?
@@ -101,3 +121,4 @@ for i in range(n):
 
 # parallelisation?
 # time limit and provisional solution? in local vs global?
+# seeds/init to find a variety of local optima?
